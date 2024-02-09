@@ -1,8 +1,9 @@
 import pandas as pd
+import polars as pl
 import os
 import duckdb
 import pyarrow
-from deltalake import DeltaTable, write_deltalake
+from deltalake import DeltaTable
 
 dados = {
     'id': [1, 2, 3, 4, 5],
@@ -11,15 +12,13 @@ dados = {
 }
 
 # Crio uma tabela Delta Lake para armazenar os dados no PC (em conjunto com Pandas)
-df = pd.DataFrame(dados)
-write_deltalake("tmp/some-table", df, mode="overwrite")
-
-
+df = pl.DataFrame(dados)
+df.write_delta("tmp/some-table")
 
 # Carrego a tabela Delta Lake para criar a Delta Table.
 dt = DeltaTable("tmp/some-table")
-print(f"Version: {dt.version()}")
-print(f"Files: {dt.files()}")
+# print(f"Version: {dt.version()}")
+# print(f"Files: {dt.files()}")
 
 # Conecto ao duck
 conn = duckdb.connect(database=':memory:', read_only=False)
